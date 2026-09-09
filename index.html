@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JHIDE — Handmade Leather Goods</title>
+<meta name="description" content="JHIDE — full-grain leather wallets and small leather goods, cut, stitched and burnished by hand.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   JHIDE — Animated prototype  ·  v1.2  (mono UI, colour photography)
+   ONE FILE. No build step. Works offline.
+   ------------------------------------------------------------
+   Photos live in  ./images/  — filenames are set in two places:
+     1. the PRODUCTS list at the bottom of this file
+     2. the <img> tags in the hero / process / material sections
+   Colour rules (v1.2):
+     class="tint"  -> always full colour  (hero pair, material shot)
+     class="mono"  -> black & white, turns colour on hover, and on
+                      the active process step while scrolling
+   Swap one class for the other on any <img> to change its treatment.
+   ============================================================ */
+
+/* ---------- 1. TOKENS ---------- */
+:root{
+  --paper:#FFFFFF;
+  --paper-2:#F1F1EF;
+  --paper-3:#E3E3E0;
+  --ink:#0A0A0A;
+  --ink-2:#161616;
+  --grey:#6E6E6E;
+  --grey-2:#9A9A9A;
+  --line:rgba(10,10,10,.14);
+  --line-dk:rgba(255,255,255,.18);
+
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+  --pad:clamp(20px,5vw,72px);
+  --maxw:1320px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-weight:400;font-size:16px;line-height:1.65;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:600;line-height:1.04;margin:0;letter-spacing:-.02em}
+p{margin:0}
+
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+.eyebrow{
+  font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:12px;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--ink);flex:none}
+.lead{font-size:clamp(16px,1.35vw,18.5px);line-height:1.75;color:var(--grey);font-weight:300}
+
+/* photos
+   .mono  = black & white, turns colour on hover / when active
+   .tint  = always full colour (hero + material feature shots)   */
+.mono{filter:grayscale(1) contrast(1.06);transition:filter .8s var(--ease-out),transform 1.2s var(--ease-out)}
+.hoverable:hover .mono,.mono.live{filter:grayscale(0) contrast(1)}
+.tint{filter:saturate(1.04);transition:transform 1.2s var(--ease-out)}
+/* colour photos fade up on first paint so the hero still feels animated */
+.hero-card img.tint{opacity:0;transform:scale(1.05)}
+.ready .hero-card img.tint{opacity:1;transform:none;
+  transition:opacity 1.2s var(--ease-out) .25s,transform 1.6s var(--ease-out) .25s}
+.ready .hero-card.b img.tint{transition-delay:.45s}
+
+/* ---------- 2. PRELOADER ---------- */
+#loader{
+  position:fixed;inset:0;z-index:9999;background:var(--ink);
+  display:grid;place-items:center;transition:transform 1s var(--ease-out) .15s;
+}
+#loader.done{transform:translateY(-101%)}
+.load-in{text-align:center;color:var(--paper)}
+.load-mark{
+  font-family:var(--serif);font-size:clamp(38px,7vw,74px);letter-spacing:.2em;
+  text-indent:.2em;font-weight:600;
+}
+.load-bar{width:min(240px,50vw);height:2px;background:rgba(255,255,255,.22);margin:22px auto 0;overflow:hidden}
+.load-bar i{display:block;height:100%;width:0;background:var(--paper);transition:width .25s linear}
+.load-pct{font-size:11px;letter-spacing:.24em;margin-top:14px;color:rgba(255,255,255,.5)}
+
+/* ---------- 3. HEADER ---------- */
+header{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  transition:background .45s var(--ease),box-shadow .45s var(--ease),padding .45s var(--ease);
+  padding-block:26px;
+}
+header.stuck{background:var(--paper);box-shadow:0 1px 0 var(--line);padding-block:14px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-family:var(--serif);font-size:22px;font-weight:700;letter-spacing:.26em;text-indent:.26em}
+.nav-links{display:flex;gap:34px;font-size:13px;letter-spacing:.08em;font-weight:500}
+.nav-links a{position:relative;padding-block:4px}
+.nav-links a::after{
+  content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:currentColor;
+  transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease-out);
+}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-cta{
+  border:1px solid var(--ink);padding:11px 22px;font-size:12px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;position:relative;overflow:hidden;
+}
+.nav-cta span{position:relative;z-index:2;transition:color .45s var(--ease)}
+.nav-cta::before{
+  content:"";position:absolute;inset:0;background:var(--ink);
+  transform:translateY(101%);transition:transform .45s var(--ease-out);
+}
+.nav-cta:hover::before{transform:translateY(0)}
+.nav-cta:hover span{color:var(--paper)}
+.burger{display:none;width:26px;height:14px;position:relative}
+.burger i{position:absolute;left:0;width:100%;height:1.5px;background:var(--ink);transition:.4s var(--ease)}
+.burger i:first-child{top:0}.burger i:last-child{bottom:0}
+.burger.open i:first-child{top:6px;transform:rotate(45deg)}
+.burger.open i:last-child{bottom:6.5px;transform:rotate(-45deg)}
+/* header over dark sections */
+header.on-dark .brand,header.on-dark .nav-links a,header.on-dark .nav-cta{color:var(--paper)}
+header.on-dark.stuck{background:var(--ink);box-shadow:0 1px 0 var(--line-dk)}
+header.on-dark .nav-cta{border-color:rgba(255,255,255,.5)}
+header.on-dark .nav-cta::before{background:var(--paper)}
+header.on-dark .nav-cta:hover span{color:var(--ink)}
+header.on-dark .burger i{background:var(--paper)}
+
+/* ---------- 4. HERO ---------- */
+.hero{
+  min-height:100svh;display:flex;align-items:center;position:relative;
+  padding-top:140px;padding-bottom:90px;
+}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(30px,5vw,80px);align-items:center;width:100%}
+.hero h1{font-size:clamp(46px,7.4vw,104px);letter-spacing:-.035em}
+.hero h1 em{font-style:italic;color:var(--grey)}
+.line{display:block;overflow:hidden}
+.line>span{display:block;transform:translateY(110%);transition:transform 1.05s var(--ease-out)}
+.ready .line>span{transform:translateY(0)}
+.ready .line:nth-child(2)>span{transition-delay:.09s}
+.ready .line:nth-child(3)>span{transition-delay:.18s}
+
+.hero-sub{max-width:44ch;margin-top:28px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.btn{
+  display:inline-flex;align-items:center;gap:12px;padding:16px 30px;font-size:12.5px;
+  font-weight:600;letter-spacing:.14em;text-transform:uppercase;position:relative;overflow:hidden;
+}
+.btn span{position:relative;z-index:2}
+.btn-solid{background:var(--ink);color:var(--paper)}
+.btn-solid::before{content:"";position:absolute;inset:0;background:var(--grey);transform:translateY(101%);transition:transform .5s var(--ease-out)}
+.btn-solid:hover::before{transform:translateY(0)}
+.btn-line{border:1px solid var(--line)}
+.btn-line::before{content:"";position:absolute;inset:0;background:var(--paper-2);transform:translateY(101%);transition:transform .5s var(--ease-out)}
+.btn-line:hover::before{transform:translateY(0)}
+.btn .arw{transition:transform .5s var(--ease-out)}
+.btn:hover .arw{transform:translateX(5px)}
+
+.hero-meta{display:flex;gap:44px;margin-top:52px;padding-top:26px;border-top:1px solid var(--line)}
+.hero-meta b{display:block;font-family:var(--serif);font-size:30px;font-weight:600;line-height:1}
+.hero-meta small{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2)}
+
+/* hero visual */
+.hero-vis{position:relative;aspect-ratio:4/5;max-height:76svh}
+.hero-card{position:absolute;overflow:hidden;background:var(--paper-2)}
+.hero-card.a{inset:0 18% 14% 0;z-index:2}
+.hero-card.b{width:46%;aspect-ratio:1/1;right:0;bottom:0;z-index:3}
+.hero-card img{width:100%;height:100%;object-fit:cover}
+.float{animation:float 7s ease-in-out infinite}
+.float.d2{animation-duration:9s;animation-delay:-3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+.badge{
+  position:absolute;left:-9%;top:6%;width:124px;height:124px;z-index:5;
+  display:grid;place-items:center;background:var(--paper);border-radius:50%;
+}
+.badge svg{position:absolute;inset:0;animation:spin 22s linear infinite}
+.badge .dot{width:52px;height:52px;background:var(--ink);border-radius:50%;display:grid;place-items:center;color:var(--paper)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- 5. MARQUEE ---------- */
+.marquee{
+  background:var(--ink);color:var(--paper);padding:16px 0;overflow:hidden;
+  display:flex;white-space:nowrap;
+}
+.mq-track{display:flex;gap:56px;padding-right:56px;animation:mq 26s linear infinite;flex:none}
+.marquee:hover .mq-track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-100%)}}
+.mq-track span{
+  font-family:var(--serif);font-size:clamp(15px,1.5vw,19px);letter-spacing:.04em;
+  display:flex;align-items:center;gap:56px;
+}
+.mq-track span::after{content:"";width:5px;height:5px;background:var(--paper);border-radius:50%;flex:none}
+
+/* ---------- 6. GENERIC SECTION ---------- */
+section{position:relative}
+.sec{padding-block:clamp(80px,11vw,150px)}
+[data-rv]{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out)}
+[data-rv].in{opacity:1;transform:none}
+
+/* ---------- 7. PROCESS (scroll-pinned) ---------- */
+.process{background:var(--ink);color:var(--paper)}
+.process .eyebrow{color:var(--paper)}
+.process .eyebrow::before{background:var(--paper)}
+.proc-intro{padding-top:clamp(70px,9vw,120px);padding-bottom:20px}
+.proc-intro h2{font-size:clamp(34px,5.1vw,68px);max-width:16ch;margin-top:18px}
+.proc-intro h2 em{font-style:italic;color:var(--grey-2)}
+
+.proc-scroll{position:relative}
+.proc-sticky{
+  position:sticky;top:0;height:100svh;display:grid;
+  grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:center;
+}
+.proc-stage{position:relative;aspect-ratio:4/5;max-height:64svh;justify-self:center;width:100%;overflow:hidden;background:var(--ink-2)}
+.proc-art{
+  position:absolute;inset:0;opacity:0;transform:scale(1.06);
+  transition:opacity .8s var(--ease-out),transform 1.4s var(--ease-out),filter 1s var(--ease-out);
+}
+.proc-art img{width:100%;height:100%;object-fit:cover}
+.proc-art.on{opacity:1;transform:scale(1)}
+.proc-cap{
+  position:absolute;left:0;bottom:0;z-index:4;background:var(--paper);color:var(--ink);
+  font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;padding:9px 14px;
+}
+
+.proc-copy{position:relative;min-height:320px}
+.proc-step{
+  position:absolute;inset:0;opacity:0;transform:translateY(26px);pointer-events:none;
+  transition:opacity .6s var(--ease-out),transform .7s var(--ease-out);
+}
+.proc-step.on{opacity:1;transform:none;pointer-events:auto}
+.proc-num{font-family:var(--serif);font-size:clamp(60px,9vw,120px);line-height:.85;color:rgba(255,255,255,.16)}
+.proc-step h3{font-size:clamp(26px,3.2vw,42px);margin:6px 0 16px}
+.proc-step p{color:rgba(255,255,255,.66);max-width:42ch;font-weight:300;line-height:1.8}
+.proc-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.proc-tags i{
+  font-style:normal;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid var(--line-dk);padding:7px 13px;color:rgba(255,255,255,.72);
+}
+.proc-rail{
+  position:absolute;left:0;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:14px;padding-left:calc(var(--pad) - 22px);
+}
+.proc-rail b{display:block;width:2px;height:44px;background:rgba(255,255,255,.2);position:relative;overflow:hidden}
+.proc-rail b::after{content:"";position:absolute;inset:0;background:var(--paper);
+  transform:scaleY(0);transform-origin:top;transition:transform .5s var(--ease)}
+.proc-rail b.on::after{transform:scaleY(1)}
+
+/* ---------- 8. PRODUCTS (horizontal scroll) ---------- */
+.prod-top{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:44px}
+.prod-top h2{font-size:clamp(34px,5.1vw,68px)}
+.prod-top h2 em{font-style:italic;color:var(--grey)}
+.prod-nav{display:flex;gap:10px}
+.rnd{
+  width:52px;height:52px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;
+  transition:background .4s var(--ease),color .4s var(--ease),border-color .4s var(--ease);
+}
+.rnd:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.rnd[disabled]{opacity:.28;pointer-events:none}
+
+.track{
+  display:flex;gap:clamp(16px,2vw,28px);overflow-x:auto;scroll-snap-type:x mandatory;
+  padding-bottom:34px;scrollbar-width:none;cursor:grab;
+}
+.track::-webkit-scrollbar{display:none}
+.track.drag{cursor:grabbing;scroll-snap-type:none}
+.card{flex:0 0 clamp(240px,25vw,340px);scroll-snap-align:start}
+.card-img{aspect-ratio:4/5;overflow:hidden;position:relative;background:var(--paper-2)}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card:hover .card-img img{transform:scale(1.05)}
+.tag{
+  position:absolute;z-index:4;top:14px;left:14px;background:var(--ink);color:var(--paper);
+  font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:6px 11px;
+}
+.quick{
+  position:absolute;z-index:4;left:14px;right:14px;bottom:14px;background:var(--paper);color:var(--ink);
+  text-align:center;padding:14px;font-size:11.5px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;transform:translateY(calc(100% + 18px));transition:transform .55s var(--ease-out);
+}
+.card:hover .quick{transform:translateY(0)}
+.card-body{display:flex;justify-content:space-between;gap:16px;padding-top:18px}
+.card-body h4{font-size:19px;font-weight:600}
+.card-body small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-2)}
+.price{font-family:var(--serif);font-size:19px;white-space:nowrap}
+.rail{height:2px;background:var(--paper-3);position:relative;margin-top:6px}
+.rail i{position:absolute;left:0;top:0;height:100%;background:var(--ink);width:22%}
+
+/* ---------- 9. MATERIAL SPLIT ---------- */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:center}
+.split h2{font-size:clamp(30px,4.2vw,56px)}
+.split h2 em{font-style:italic;color:var(--grey)}
+.split-vis{aspect-ratio:5/6;position:relative}
+.split-vis .big{position:absolute;inset:0;overflow:hidden;background:var(--paper-3)}
+.split-vis .sm{position:absolute;right:-8%;bottom:-7%;width:44%;aspect-ratio:1/1;z-index:3;overflow:hidden;
+  border:8px solid var(--paper-2);background:var(--paper-3)}
+.split-vis img{width:100%;height:100%;object-fit:cover}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:44px;background:var(--line)}
+.fact{background:var(--paper-2);padding:26px 22px}
+.fact b{display:block;font-family:var(--serif);font-size:clamp(30px,3.4vw,44px);line-height:1}
+.fact small{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grey-2);margin-top:10px}
+
+/* ---------- 10. QUOTE ---------- */
+.quote{background:var(--paper-2);text-align:center}
+.quote blockquote{
+  font-family:var(--serif);font-size:clamp(24px,3.6vw,46px);line-height:1.28;
+  max-width:20ch;margin:26px auto 0;font-style:italic;
+}
+.quote cite{display:block;font-style:normal;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grey-2);margin-top:30px}
+
+/* ---------- 11. CTA + FOOTER ---------- */
+.cta{background:var(--ink);color:var(--paper);text-align:center}
+.cta h2{font-size:clamp(34px,5.4vw,72px)}
+.cta h2 em{font-style:italic;color:var(--grey-2)}
+.cta p{color:rgba(255,255,255,.7);max-width:46ch;margin:22px auto 0;font-weight:300}
+.form{display:flex;max-width:470px;margin:40px auto 0;border-bottom:1px solid rgba(255,255,255,.4)}
+.form input{flex:1;background:none;border:0;padding:16px 4px;color:var(--paper);font:inherit;font-size:15px;outline:none}
+.form input::placeholder{color:rgba(255,255,255,.45)}
+.form button{padding:16px 8px;font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.form button:hover{color:var(--grey-2)}
+
+footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;font-size:13.5px;
+  border-top:1px solid var(--line-dk)}
+.f-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px}
+.f-grid h5{font-family:var(--sans);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--paper);margin:0 0 20px;font-weight:600}
+.f-grid a{display:block;padding-block:6px;transition:color .35s var(--ease)}
+.f-grid a:hover{color:var(--paper)}
+.f-brand{font-family:var(--serif);font-size:26px;letter-spacing:.24em;color:var(--paper);text-indent:.24em}
+.f-bot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  margin-top:56px;padding-top:24px;border-top:1px solid var(--line-dk);font-size:12px}
+
+/* ---------- 12. PROGRESS + TO-TOP ---------- */
+#bar{position:fixed;top:0;left:0;height:2px;background:var(--ink);z-index:950;width:0}
+#top{
+  position:fixed;right:24px;bottom:24px;z-index:940;width:48px;height:48px;border-radius:50%;
+  background:var(--ink);color:var(--paper);display:grid;place-items:center;
+  opacity:0;transform:translateY(14px);pointer-events:none;transition:.45s var(--ease);
+  border:1px solid var(--paper);
+}
+#top.on{opacity:1;transform:none;pointer-events:auto}
+
+/* ---------- 13. RESPONSIVE ---------- */
+@media(max-width:1000px){
+  .hero-grid,.split,.proc-sticky{grid-template-columns:1fr}
+  .hero-vis{max-height:46svh;aspect-ratio:5/4;order:-1}
+  .badge{display:none}
+  .proc-sticky{height:auto;position:static;padding-block:40px;gap:34px}
+  .proc-stage{max-height:44svh;order:-1;aspect-ratio:4/3}
+  .proc-copy{position:static;min-height:0}
+  .proc-step{position:static;opacity:1;transform:none;margin-bottom:56px;pointer-events:auto}
+  .proc-art{position:static;opacity:0;height:0}
+  .proc-art.on{opacity:1;height:100%}
+  .proc-rail{display:none}
+  .split-vis{aspect-ratio:4/3}
+  .split-vis .sm{right:0;bottom:-6%;width:38%}
+  .f-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  .nav-links,.nav-cta{display:none}
+  .burger{display:block}
+  .prod-top{flex-direction:column;align-items:start}
+  .hero-meta{gap:26px}
+  .facts{grid-template-columns:1fr}
+  .prod-nav{display:none}
+}
+
+/* ---------- 14. REDUCED MOTION ---------- */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;scroll-behavior:auto!important}
+  [data-rv]{opacity:1;transform:none}
+  .line>span{transform:none}
+  .proc-step{position:static;opacity:1;transform:none;margin-bottom:50px}
+  .proc-sticky{position:static;height:auto;padding-block:40px}
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="loader">
+  <div class="load-in">
+    <div class="load-mark">JHIDE</div>
+    <div class="load-bar"><i id="lbar"></i></div>
+    <div class="load-pct"><span id="lpct">0</span>%</div>
+  </div>
+</div>
+
+<div id="bar"></div>
+
+<!-- HEADER -->
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#" class="brand">JHIDE</a>
+    <nav class="nav-links">
+      <a href="#craft">Craft</a>
+      <a href="#shop">Collection</a>
+      <a href="#material">Material</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#shop" class="nav-cta"><span>Shop Wallets</span></a>
+    <button class="burger" id="burger" aria-label="Menu"><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow" style="margin-bottom:26px">Est. 2019 — Dhaka, Bangladesh</div>
+      <h1>
+        <span class="line"><span>Cut once.</span></span>
+        <span class="line"><span>Stitched</span></span>
+        <span class="line"><span><em>by hand.</em></span></span>
+      </h1>
+      <p class="lead hero-sub" data-rv>Full-grain vegetable-tanned leather, saddle-stitched with waxed linen thread and burnished edge by edge. Built to darken, soften and outlast the decade.</p>
+      <div class="hero-actions" data-rv>
+        <a href="#shop" class="btn btn-solid"><span>Explore Collection</span><span class="arw">→</span></a>
+        <a href="#craft" class="btn btn-line"><span>See The Process</span></a>
+      </div>
+      <div class="hero-meta" data-rv>
+        <div><b data-count="7">0</b><small>Years of craft</small></div>
+        <div><b data-count="14">0</b><small>Hand steps</small></div>
+        <div><b data-count="100" data-suffix="%">0</b><small>Full grain</small></div>
+      </div>
+    </div>
+
+    <div class="hero-vis">
+      <div class="badge">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs><path id="circ" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs>
+          <text font-family="Inter,sans-serif" font-size="9.5" letter-spacing="3.4" fill="#0A0A0A">
+            <textPath href="#circ">HANDMADE IN BANGLADESH • SINCE 2019 • </textPath>
+          </text>
+        </svg>
+        <div class="dot">✦</div>
+      </div>
+      <div class="hero-card a float">
+        <img class="tint" src="images/collection-flatlay.jpg" alt="JHIDE leather wallets, card holders and belts laid out on linen">
+      </div>
+      <div class="hero-card b float d2">
+        <img class="tint" src="images/needle-and-thread.jpg" alt="Hand-sewing needle threaded with waxed linen">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="mq-track">
+    <span>Vegetable tanned</span><span>Saddle stitched</span><span>Hand burnished</span>
+    <span>Full grain only</span><span>Ages beautifully</span><span>Made in Dhaka</span>
+  </div>
+  <div class="mq-track">
+    <span>Vegetable tanned</span><span>Saddle stitched</span><span>Hand burnished</span>
+    <span>Full grain only</span><span>Ages beautifully</span><span>Made in Dhaka</span>
+  </div>
+</div>
+
+<!-- PROCESS -->
+<section class="process dark" id="craft">
+  <div class="wrap proc-intro" data-rv>
+    <div class="eyebrow">The Making</div>
+    <h2>Four hands, <em>four stages</em>, one wallet.</h2>
+  </div>
+
+  <div class="proc-scroll" id="procScroll">
+    <div class="proc-sticky wrap">
+      <div class="proc-rail" id="procRail" aria-hidden="true">
+        <b class="on"></b><b></b><b></b><b></b>
+      </div>
+
+      <div class="proc-stage" id="procStage">
+        <div class="proc-art on">
+          <img class="mono live" src="images/leather-hide-grain.jpg" alt="Close-up of full-grain vegetable-tanned leather">
+          <span class="proc-cap">The hide</span>
+        </div>
+        <div class="proc-art">
+          <img class="mono" src="images/thread-spools-crate.jpg" alt="Crate of waxed linen thread spools">
+          <span class="proc-cap">Thread</span>
+        </div>
+        <div class="proc-art">
+          <img class="mono" src="images/stitching-by-hand.jpg" alt="Hands guiding leather under a stitching machine">
+          <span class="proc-cap">Stitching</span>
+        </div>
+        <div class="proc-art">
+          <img class="mono" src="images/bifold-wallet-in-hand.jpg" alt="Finished bifold wallet held in hand">
+          <span class="proc-cap">Finished</span>
+        </div>
+      </div>
+
+      <div class="proc-copy" id="procCopy">
+        <article class="proc-step on">
+          <div class="proc-num">01</div>
+          <h3>Selecting the hide</h3>
+          <p>Every order starts at the hide, not the pattern. We read grain direction, scarring and stretch, then mark only the panels that will hold their shape for years. Roughly a third of each hide is set aside.</p>
+          <div class="proc-tags"><i>Veg tanned</i><i>Full grain</i><i>Hand graded</i></div>
+        </article>
+        <article class="proc-step">
+          <div class="proc-num">02</div>
+          <h3>Thread &amp; needle</h3>
+          <p>Thread is matched to the leather before a single hole is punched — weight, twist and wax, chosen so the stitch sits into the surface rather than on top of it. The wrong thread shows up three years later, not on day one.</p>
+          <div class="proc-tags"><i>Waxed linen</i><i>Matched twist</i><i>7 SPI</i></div>
+        </article>
+        <article class="proc-step">
+          <div class="proc-num">03</div>
+          <h3>Cut, skived, stitched</h3>
+          <p>Panels are cut against steel rule and skived down at every fold, so the wallet closes flat instead of bulking at the spine. Then it is stitched — locked at every hole, so cutting one stitch never unravels the seam.</p>
+          <div class="proc-tags"><i>Clicker knife</i><i>Skived folds</i><i>0.4mm</i></div>
+        </article>
+        <article class="proc-step">
+          <div class="proc-num">04</div>
+          <h3>Burnish &amp; finish</h3>
+          <p>Edges are sanded, dampened, and worked with a wooden slicker until the fibres compress to a glass finish. A final coat of beeswax seals the surface. Then it is checked, numbered, and boxed.</p>
+          <div class="proc-tags"><i>Slicked edge</i><i>Beeswax</i><i>Numbered</i></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="sec" id="shop">
+  <div class="wrap">
+    <div class="prod-top" data-rv>
+      <div>
+        <div class="eyebrow" style="margin-bottom:20px">Featured</div>
+        <h2>The <em>Everyday</em> Collection</h2>
+      </div>
+      <div class="prod-nav">
+        <button class="rnd" id="prev" aria-label="Previous">←</button>
+        <button class="rnd" id="next" aria-label="Next">→</button>
+      </div>
+    </div>
+    <div class="track" id="track"></div>
+    <div class="rail"><i id="railFill"></i></div>
+  </div>
+</section>
+
+<!-- MATERIAL -->
+<section class="sec" id="material" style="background:var(--paper-2)">
+  <div class="wrap split">
+    <div class="split-vis hoverable" data-rv>
+      <div class="big"><img class="tint" src="images/machine-needle-detail.jpg" alt="Brass machine needle threaded above leather"></div>
+      <div class="sm"><img class="mono" src="images/atelier-sewing-machine.jpg" alt="Vintage sewing machine in the JHIDE workshop"></div>
+    </div>
+    <div data-rv>
+      <div class="eyebrow" style="margin-bottom:22px">The Material</div>
+      <h2>Leather that <em>remembers</em> you.</h2>
+      <p class="lead" style="margin-top:26px">Vegetable tanning takes weeks instead of hours, and uses bark tannins rather than chrome salts. The result is a hide that keeps its fibre structure — so it takes a patina, holds a crease where you fold it, and darkens toward the colour of use rather than wear.</p>
+      <div class="facts">
+        <div class="fact"><b data-count="45" data-suffix=" days">0</b><small>In the tanning pit</small></div>
+        <div class="fact"><b data-count="2" data-suffix="mm">0</b><small>Panel thickness</small></div>
+        <div class="fact"><b data-count="7" data-suffix=" SPI">0</b><small>Stitch density</small></div>
+        <div class="fact"><b>Zero</b><small>Chrome salts used</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="sec quote">
+  <div class="wrap" data-rv>
+    <div class="eyebrow" style="justify-content:center">Client note</div>
+    <blockquote>“Three years in my back pocket and it looks better than the day it arrived.”</blockquote>
+    <cite>— R. Ahmed, Bifold No. 01</cite>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="sec cta dark" id="contact">
+  <div class="wrap" data-rv>
+    <h2>Carry something <em>made</em>.</h2>
+    <p>Join the list for new drops, restocks and a short note on leather care. No noise, roughly once a month.</p>
+    <form class="form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Thank you';">
+      <input type="email" placeholder="your@email.com" required aria-label="Email">
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="dark">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <div class="f-brand">JHIDE</div>
+        <p style="margin-top:18px;max-width:32ch">Small leather goods, cut and stitched by hand in Dhaka since 2019.</p>
+      </div>
+      <div><h5>Shop</h5><a href="#shop">Bifolds</a><a href="#shop">Card holders</a><a href="#shop">Long wallets</a><a href="#shop">Belts</a></div>
+      <div><h5>Company</h5><a href="#craft">Our craft</a><a href="#material">Materials</a><a href="#">Care guide</a><a href="#contact">Contact</a></div>
+      <div><h5>Follow</h5><a href="#">Instagram</a><a href="#">Facebook</a><a href="#">Pinterest</a><a href="#">WhatsApp</a></div>
+    </div>
+    <div class="f-bot">
+      <span>© <span id="yr"></span> JHIDE. All rights reserved.</span>
+      <span>Prototype — design preview</span>
+    </div>
+  </div>
+</footer>
+
+<button id="top" aria-label="Back to top">↑</button>
+
+<script>
+/* ============================================================
+   PRODUCT DATA — EDIT HERE
+   img: filename inside the ./images/ folder.
+   ============================================================ */
+const PRODUCTS = [
+  {name:"Bifold No. 01",     type:"Card + note bifold", price:"৳ 3,200", tag:"Bestseller", img:"images/bifold-wallet-in-hand.jpg"},
+  {name:"Card Holder No. 02",type:"Four pocket",        price:"৳ 1,850", tag:"",           img:"images/card-holder-tan.jpg"},
+  {name:"Belt No. 05",       type:"Solid brass buckle", price:"৳ 4,900", tag:"New",        img:"images/collection-flatlay.jpg"},
+  {name:"Swatch Set",        type:"Six veg-tan tones",  price:"৳ 1,400", tag:"",           img:"images/leather-hide-grain.jpg"},
+  {name:"Thread & Care Kit", type:"Wax, cloth, thread", price:"৳ 2,600", tag:"",           img:"images/thread-spools-crate.jpg"},
+  {name:"Bespoke Commission",type:"Made to order",      price:"On request", tag:"Limited", img:"images/atelier-sewing-machine.jpg"},
+];
+
+/* ---------- render products ---------- */
+const track = document.getElementById('track');
+track.innerHTML = PRODUCTS.map(p => `
+  <article class="card hoverable">
+    <div class="card-img">
+      ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+      <img class="mono" src="${p.img}" alt="${p.name}" loading="lazy">
+      <div class="quick">Quick view</div>
+    </div>
+    <div class="card-body">
+      <div><h4>${p.name}</h4><small>${p.type}</small></div>
+      <div class="price">${p.price}</div>
+    </div>
+  </article>`).join('');
+
+/* ---------- preloader ---------- */
+(function(){
+  const L=document.getElementById('loader'),B=document.getElementById('lbar'),P=document.getElementById('lpct');
+  let v=0;
+  const t=setInterval(()=>{
+    v=Math.min(100,v+Math.random()*16+6);
+    B.style.width=v+'%'; P.textContent=Math.round(v);
+    if(v>=100){
+      clearInterval(t);
+      setTimeout(()=>{L.classList.add('done');document.body.classList.add('ready');},260);
+    }
+  },105);
+})();
+
+/* ---------- header + progress + to-top ---------- */
+const darkSecs=[...document.querySelectorAll('.dark')];
+const hdr=document.getElementById('hdr'),bar=document.getElementById('bar'),toTop=document.getElementById('top');
+function onScroll(){
+  const y=scrollY;
+  hdr.classList.toggle('stuck', y>60);
+  toTop.classList.toggle('on', y>700);
+  const h=document.documentElement.scrollHeight-innerHeight;
+  bar.style.width=(h>0? (y/h)*100:0)+'%';
+  const band=hdr.offsetHeight*0.55;
+  let dark=false;
+  darkSecs.forEach(s=>{const r=s.getBoundingClientRect(); if(r.top<=band && r.bottom>=band) dark=true;});
+  hdr.classList.toggle('on-dark',dark);
+}
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+toTop.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+document.getElementById('yr').textContent=new Date().getFullYear();
+document.getElementById('burger').onclick=function(){this.classList.toggle('open')};
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver((es)=>{
+  es.forEach((e,i)=>{ if(e.isIntersecting){ setTimeout(()=>e.target.classList.add('in'), i*90); io.unobserve(e.target);} });
+},{threshold:.14,rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('[data-rv]').forEach(el=>io.observe(el));
+
+/* ---------- number count up ---------- */
+const cio=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const el=e.target, end=+el.dataset.count, pre=el.dataset.prefix||'', suf=el.dataset.suffix||'';
+    let n=0, steps=38, i=0;
+    const t=setInterval(()=>{
+      i++; n=Math.round(end*(1-Math.pow(1-i/steps,3)));
+      el.textContent=pre+n+suf;
+      if(i>=steps){clearInterval(t); el.textContent=pre+end+suf;}
+    },22);
+    cio.unobserve(el);
+  });
+},{threshold:.6});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* ---------- pinned process scroll ---------- */
+(function(){
+  const scroller=document.getElementById('procScroll');
+  const steps=[...document.querySelectorAll('.proc-step')];
+  const arts=[...document.querySelectorAll('.proc-art')];
+  const rails=[...document.querySelectorAll('#procRail b')];
+  const N=steps.length;
+  let cur=0;
+  function apply(idx){
+    cur=idx;
+    steps.forEach((s,i)=>s.classList.toggle('on',i===idx));
+    arts.forEach((s,i)=>{
+      s.classList.toggle('on',i===idx);
+      s.querySelector('img').classList.toggle('live',i===idx);
+    });
+    rails.forEach((s,i)=>s.classList.toggle('on',i<=idx));
+  }
+  function tick(){
+    const r=scroller.getBoundingClientRect();
+    const total=r.height-innerHeight;
+    if(total<=0) return;
+    const p=Math.min(1,Math.max(0,(-r.top)/total));
+    const idx=Math.min(N-1,Math.floor(p*N*0.999));
+    if(idx!==cur) apply(idx);
+  }
+  const pinned = !matchMedia('(max-width:1000px)').matches
+              && !matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(pinned){
+    scroller.style.height=(N*100)+'svh';
+    addEventListener('scroll',tick,{passive:true}); tick();
+  } else {
+    /* stacked fallback: light each photo as its step scrolls in */
+    const sio=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting) apply(steps.indexOf(e.target)); });
+    },{threshold:.5});
+    steps.forEach(s=>sio.observe(s));
+  }
+})();
+
+/* ---------- product scroller: buttons, drag, progress ---------- */
+(function(){
+  const t=document.getElementById('track'), fill=document.getElementById('railFill');
+  const prev=document.getElementById('prev'), next=document.getElementById('next');
+  const step=()=>{ const c=t.querySelector('.card'); return c? c.offsetWidth+24 : 320; };
+  prev.onclick=()=>t.scrollBy({left:-step(),behavior:'smooth'});
+  next.onclick=()=>t.scrollBy({left: step(),behavior:'smooth'});
+  function upd(){
+    const max=t.scrollWidth-t.clientWidth;
+    const p=max>0? t.scrollLeft/max : 0;
+    fill.style.width=Math.max(18, 18+p*82)+'%';
+    prev.disabled=t.scrollLeft<4; next.disabled=t.scrollLeft>max-4;
+  }
+  t.addEventListener('scroll',upd,{passive:true}); setTimeout(upd,60); addEventListener('resize',upd);
+
+  let down=false,sx=0,sl=0;
+  t.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sl=t.scrollLeft;t.classList.add('drag')});
+  addEventListener('pointerup',()=>{down=false;t.classList.remove('drag')});
+  t.addEventListener('pointermove',e=>{ if(!down)return; e.preventDefault(); t.scrollLeft=sl-(e.clientX-sx); });
+})();
+</script>
+</body>
+</html>
