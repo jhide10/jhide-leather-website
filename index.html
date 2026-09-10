@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JHIDE — Handmade Leather Goods</title>
-<meta name="description" content="JHIDE — full-grain leather wallets and small leather goods, cut, stitched and burnished by hand.">
+<title>JHIDE | Handmade Leather Goods</title>
+<meta name="description" content="JHIDE makes full-grain leather wallets and small leather goods, cut, stitched and burnished by hand.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   JHIDE — Animated prototype  ·  v1.2  (mono UI, colour photography)
+   JHIDE / Animated prototype  ·  v1.3  (mono UI, colour photography)
    ONE FILE. No build step. Works offline.
    ------------------------------------------------------------
-   Photos live in  ./images/  — filenames are set in two places:
+   Photos live in  ./images/ : filenames are set in two places:
      1. the PRODUCTS list at the bottom of this file
      2. the <img> tags in the hero / process / material sections
-   Colour rules (v1.2):
+   Colour rules:
      class="tint"  -> always full colour  (hero pair, material shot)
      class="mono"  -> black & white, turns colour on hover, and on
                       the active process step while scrolling
@@ -60,9 +60,8 @@ p{margin:0}
 .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
 .eyebrow{
   font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:12px;
+  text-transform:uppercase;color:var(--ink);display:flex;align-items:center;
 }
-.eyebrow::before{content:"";width:28px;height:1px;background:var(--ink);flex:none}
 .lead{font-size:clamp(16px,1.35vw,18.5px);line-height:1.75;color:var(--grey);font-weight:300}
 
 /* photos
@@ -207,7 +206,6 @@ section{position:relative}
 /* ---------- 7. PROCESS (scroll-pinned) ---------- */
 .process{background:var(--ink);color:var(--paper)}
 .process .eyebrow{color:var(--paper)}
-.process .eyebrow::before{background:var(--paper)}
 .proc-intro{padding-top:clamp(70px,9vw,120px);padding-bottom:20px}
 .proc-intro h2{font-size:clamp(34px,5.1vw,68px);max-width:16ch;margin-top:18px}
 .proc-intro h2 em{font-style:italic;color:var(--grey-2)}
@@ -415,7 +413,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <div class="eyebrow" style="margin-bottom:26px">Est. 2019 — Dhaka, Bangladesh</div>
+      <div class="eyebrow" style="margin-bottom:26px">Established 2019 &middot; Small batch atelier</div>
       <h1>
         <span class="line"><span>Cut once.</span></span>
         <span class="line"><span>Stitched</span></span>
@@ -437,8 +435,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
       <div class="badge">
         <svg viewBox="0 0 120 120" aria-hidden="true">
           <defs><path id="circ" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs>
-          <text font-family="Inter,sans-serif" font-size="9.5" letter-spacing="3.4" fill="#0A0A0A">
-            <textPath href="#circ">HANDMADE IN BANGLADESH • SINCE 2019 • </textPath>
+          <text font-family="Inter,sans-serif" font-size="9" font-weight="600" fill="#0A0A0A">
+            <textPath href="#circ" startOffset="0" textLength="282.5" lengthAdjust="spacing">HANDMADE IN SMALL BATCHES • SINCE 2019 •</textPath>
           </text>
         </svg>
         <div class="dot">✦</div>
@@ -457,11 +455,11 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
 <div class="marquee" aria-hidden="true">
   <div class="mq-track">
     <span>Vegetable tanned</span><span>Saddle stitched</span><span>Hand burnished</span>
-    <span>Full grain only</span><span>Ages beautifully</span><span>Made in Dhaka</span>
+    <span>Full grain only</span><span>Ages beautifully</span><span>Small batch</span>
   </div>
   <div class="mq-track">
     <span>Vegetable tanned</span><span>Saddle stitched</span><span>Hand burnished</span>
-    <span>Full grain only</span><span>Ages beautifully</span><span>Made in Dhaka</span>
+    <span>Full grain only</span><span>Ages beautifully</span><span>Small batch</span>
   </div>
 </div>
 
@@ -507,13 +505,13 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
         <article class="proc-step">
           <div class="proc-num">02</div>
           <h3>Thread &amp; needle</h3>
-          <p>Thread is matched to the leather before a single hole is punched — weight, twist and wax, chosen so the stitch sits into the surface rather than on top of it. The wrong thread shows up three years later, not on day one.</p>
+          <p>Thread is matched to the leather before a single hole is punched. Weight, twist and wax are chosen so the stitch sits into the surface rather than on top of it. The wrong thread shows up three years later, not on day one.</p>
           <div class="proc-tags"><i>Waxed linen</i><i>Matched twist</i><i>7 SPI</i></div>
         </article>
         <article class="proc-step">
           <div class="proc-num">03</div>
           <h3>Cut, skived, stitched</h3>
-          <p>Panels are cut against steel rule and skived down at every fold, so the wallet closes flat instead of bulking at the spine. Then it is stitched — locked at every hole, so cutting one stitch never unravels the seam.</p>
+          <p>Panels are cut against steel rule and skived down at every fold, so the wallet closes flat instead of bulking at the spine. Then it is stitched, locked at every hole, so cutting one stitch never unravels the seam.</p>
           <div class="proc-tags"><i>Clicker knife</i><i>Skived folds</i><i>0.4mm</i></div>
         </article>
         <article class="proc-step">
@@ -555,7 +553,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
     <div data-rv>
       <div class="eyebrow" style="margin-bottom:22px">The Material</div>
       <h2>Leather that <em>remembers</em> you.</h2>
-      <p class="lead" style="margin-top:26px">Vegetable tanning takes weeks instead of hours, and uses bark tannins rather than chrome salts. The result is a hide that keeps its fibre structure — so it takes a patina, holds a crease where you fold it, and darkens toward the colour of use rather than wear.</p>
+      <p class="lead" style="margin-top:26px">Vegetable tanning takes weeks instead of hours, and uses bark tannins rather than chrome salts. The result is a hide that keeps its fibre structure, so it takes a patina, holds a crease where you fold it, and darkens toward the colour of use rather than wear.</p>
       <div class="facts">
         <div class="fact"><b data-count="45" data-suffix=" days">0</b><small>In the tanning pit</small></div>
         <div class="fact"><b data-count="2" data-suffix="mm">0</b><small>Panel thickness</small></div>
@@ -571,7 +569,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
   <div class="wrap" data-rv>
     <div class="eyebrow" style="justify-content:center">Client note</div>
     <blockquote>“Three years in my back pocket and it looks better than the day it arrived.”</blockquote>
-    <cite>— R. Ahmed, Bifold No. 01</cite>
+    <cite>R. Ahmed, Bifold No. 01</cite>
   </div>
 </section>
 
@@ -593,7 +591,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
     <div class="f-grid">
       <div>
         <div class="f-brand">JHIDE</div>
-        <p style="margin-top:18px;max-width:32ch">Small leather goods, cut and stitched by hand in Dhaka since 2019.</p>
+        <p style="margin-top:18px;max-width:32ch">Small leather goods, cut and stitched by hand since 2019.</p>
       </div>
       <div><h5>Shop</h5><a href="#shop">Bifolds</a><a href="#shop">Card holders</a><a href="#shop">Long wallets</a><a href="#shop">Belts</a></div>
       <div><h5>Company</h5><a href="#craft">Our craft</a><a href="#material">Materials</a><a href="#">Care guide</a><a href="#contact">Contact</a></div>
@@ -601,7 +599,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
     </div>
     <div class="f-bot">
       <span>© <span id="yr"></span> JHIDE. All rights reserved.</span>
-      <span>Prototype — design preview</span>
+      <span>Prototype / design preview</span>
     </div>
   </div>
 </footer>
@@ -610,7 +608,7 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
 
 <script>
 /* ============================================================
-   PRODUCT DATA — EDIT HERE
+   PRODUCT DATA / EDIT HERE
    img: filename inside the ./images/ folder.
    ============================================================ */
 const PRODUCTS = [
