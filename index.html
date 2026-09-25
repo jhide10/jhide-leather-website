@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   JHIDE / Animated prototype  ·  v1.3  (mono UI, colour photography)
+   JHIDE / Animated prototype  ·  v1.4  (mono UI, colour photography)
    ONE FILE. No build step. Works offline.
    ------------------------------------------------------------
    Photos live in  ./images/ : filenames are set in two places:
@@ -21,6 +21,12 @@
      class="mono"  -> black & white, turns colour on hover, and on
                       the active process step while scrolling
    Swap one class for the other on any <img> to change its treatment.
+
+   Motion works on every device. The pinned process section pins on
+   phones and tablets too; it only falls back to a sticky-image layout
+   when the viewport is too short (landscape phones) or the visitor has
+   reduced motion turned on. Touch devices get the colour reveal on
+   scroll, since they have no hover.
    ============================================================ */
 
 /* ---------- 1. TOKENS ---------- */
@@ -69,6 +75,11 @@ p{margin:0}
    .tint  = always full colour (hero + material feature shots)   */
 .mono{filter:grayscale(1) contrast(1.06);transition:filter .8s var(--ease-out),transform 1.2s var(--ease-out)}
 .hoverable:hover .mono,.mono.live{filter:grayscale(0) contrast(1)}
+/* touch devices have no hover: colour is revealed on scroll instead (see JS) */
+@media(hover:none){
+  .quick{display:none}
+  .card:hover .card-img img{transform:none}
+}
 .tint{filter:saturate(1.04);transition:transform 1.2s var(--ease-out)}
 /* colour photos fade up on first paint so the hero still feels animated */
 .hero-card img.tint{opacity:0;transform:scale(1.05)}
@@ -133,7 +144,7 @@ header.on-dark .burger i{background:var(--paper)}
 
 /* ---------- 4. HERO ---------- */
 .hero{
-  min-height:100svh;display:flex;align-items:center;position:relative;
+  min-height:100vh;min-height:100svh;display:flex;align-items:center;position:relative;
   padding-top:140px;padding-bottom:90px;
 }
 .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(30px,5vw,80px);align-items:center;width:100%}
@@ -212,7 +223,7 @@ section{position:relative}
 
 .proc-scroll{position:relative}
 .proc-sticky{
-  position:sticky;top:0;height:100svh;display:grid;
+  position:sticky;top:0;height:100vh;height:100svh;display:grid;
   grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:center;
 }
 .proc-stage{position:relative;aspect-ratio:4/5;max-height:64svh;justify-self:center;width:100%;overflow:hidden;background:var(--ink-2)}
@@ -265,6 +276,7 @@ section{position:relative}
 .track{
   display:flex;gap:clamp(16px,2vw,28px);overflow-x:auto;scroll-snap-type:x mandatory;
   padding-bottom:34px;scrollbar-width:none;cursor:grab;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
 }
 .track::-webkit-scrollbar{display:none}
 .track.drag{cursor:grabbing;scroll-snap-type:none}
@@ -347,20 +359,47 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
 
 /* ---------- 13. RESPONSIVE ---------- */
 @media(max-width:1000px){
-  .hero-grid,.split,.proc-sticky{grid-template-columns:1fr}
+  .hero-grid,.split{grid-template-columns:1fr}
   .hero-vis{max-height:46svh;aspect-ratio:5/4;order:-1}
   .badge{display:none}
-  .proc-sticky{height:auto;position:static;padding-block:40px;gap:34px}
-  .proc-stage{max-height:44svh;order:-1;aspect-ratio:4/3}
-  .proc-copy{position:static;min-height:0}
-  .proc-step{position:static;opacity:1;transform:none;margin-bottom:56px;pointer-events:auto}
-  .proc-art{position:static;opacity:0;height:0}
-  .proc-art.on{opacity:1;height:100%}
+
+  /* the pinned process section STAYS pinned — it just stacks vertically */
+  .proc-sticky{
+    display:flex;flex-direction:column;justify-content:center;
+    align-items:stretch;          /* column flex: keep children full width */
+    gap:20px;padding-block:74px 24px;
+  }
+  .proc-stage{width:100%;max-width:none;flex:0 0 auto;
+    height:32vh;height:32svh;aspect-ratio:auto;max-height:none;justify-self:stretch}
+  .proc-copy{width:100%;flex:0 0 auto;min-height:268px}
+  .proc-num{font-size:46px}
+  .proc-step h3{font-size:25px;margin:2px 0 12px}
+  .proc-step p{font-size:14.5px;line-height:1.65;max-width:100%}
+  .proc-tags{margin-top:16px;gap:8px}
+  .proc-tags i{font-size:9.5px;padding:6px 10px}
   .proc-rail{display:none}
+
   .split-vis{aspect-ratio:4/3}
   .split-vis .sm{right:0;bottom:-6%;width:38%}
   .f-grid{grid-template-columns:1fr 1fr}
 }
+
+/* tablet portrait: more room for the stage, tighter copy block */
+@media(min-width:640px) and (max-width:1000px){
+  .proc-stage{height:40vh;height:40svh}
+  .proc-copy{min-height:210px}
+  .proc-num{font-size:60px}
+  .proc-step h3{font-size:32px}
+  .proc-step p{font-size:16px;line-height:1.7}
+}
+
+/* Not enough height to pin (landscape phones, short windows) or reduced motion:
+   the stage sticks to the top and the steps scroll past it instead. */
+.proc-scroll.no-pin .proc-sticky{position:static;height:auto;display:block;padding-block:20px 0}
+.proc-scroll.no-pin .proc-stage{position:sticky;top:76px;height:auto;aspect-ratio:16/10;margin-bottom:28px}
+.proc-scroll.no-pin .proc-copy{position:static;min-height:0}
+.proc-scroll.no-pin .proc-step{position:static;opacity:1;transform:none;pointer-events:auto;margin-bottom:52px}
+.proc-scroll.no-pin .proc-rail{display:none}
 @media(max-width:720px){
   .nav-links,.nav-cta{display:none}
   .burger{display:block}
@@ -376,8 +415,6 @@ footer{background:var(--ink);color:rgba(255,255,255,.6);padding-block:70px 34px;
     transition-duration:.001ms!important;scroll-behavior:auto!important}
   [data-rv]{opacity:1;transform:none}
   .line>span{transform:none}
-  .proc-step{position:static;opacity:1;transform:none;margin-bottom:50px}
-  .proc-sticky{position:static;height:auto;padding-block:40px}
 }
 </style>
 </head>
@@ -690,15 +727,16 @@ const cio=new IntersectionObserver(es=>{
 },{threshold:.6});
 document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
 
-/* ---------- pinned process scroll ---------- */
+/* ---------- pinned process scroll (all screen sizes) ---------- */
 (function(){
   const scroller=document.getElementById('procScroll');
   const steps=[...document.querySelectorAll('.proc-step')];
   const arts=[...document.querySelectorAll('.proc-art')];
   const rails=[...document.querySelectorAll('#procRail b')];
   const N=steps.length;
-  let cur=0;
+  let cur=-1;
   function apply(idx){
+    if(idx===cur) return;
     cur=idx;
     steps.forEach((s,i)=>s.classList.toggle('on',i===idx));
     arts.forEach((s,i)=>{
@@ -712,21 +750,57 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
     const total=r.height-innerHeight;
     if(total<=0) return;
     const p=Math.min(1,Math.max(0,(-r.top)/total));
-    const idx=Math.min(N-1,Math.floor(p*N*0.999));
-    if(idx!==cur) apply(idx);
+    apply(Math.min(N-1,Math.floor(p*N*0.999)));
   }
-  const pinned = !matchMedia('(max-width:1000px)').matches
-              && !matchMedia('(prefers-reduced-motion:reduce)').matches;
-  if(pinned){
-    scroller.style.height=(N*100)+'svh';
-    addEventListener('scroll',tick,{passive:true}); tick();
-  } else {
-    /* stacked fallback: light each photo as its step scrolls in */
-    const sio=new IntersectionObserver(es=>{
+
+  /* Pin unless the viewport is too short to hold a stage + copy, or the
+     visitor asked for reduced motion. Width is NOT a reason not to pin. */
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)');
+  const short =matchMedia('(max-height:560px)');
+  let mode=null, io=null;
+
+  function stacked(){
+    scroller.classList.add('no-pin');
+    scroller.style.height='auto';
+    removeEventListener('scroll',tick);
+    io=new IntersectionObserver(es=>{
       es.forEach(e=>{ if(e.isIntersecting) apply(steps.indexOf(e.target)); });
-    },{threshold:.5});
-    steps.forEach(s=>sio.observe(s));
+    },{threshold:.01,rootMargin:'-45% 0px -45% 0px'});
+    steps.forEach(s=>io.observe(s));
+    apply(0);
   }
+  function pinned(){
+    scroller.classList.remove('no-pin');
+    if(io){io.disconnect();io=null;}
+    scroller.style.height=(N*100)+'vh';      // fallback for older Safari
+    scroller.style.height=(N*100)+'svh';     // ignored where svh is unsupported
+    addEventListener('scroll',tick,{passive:true});
+    cur=-1; tick(); apply(cur<0?0:cur);
+  }
+  function setMode(){
+    const want = (reduce.matches||short.matches) ? 'stacked' : 'pinned';
+    if(want===mode) return;
+    mode=want;
+    want==='pinned' ? pinned() : stacked();
+  }
+  setMode();
+
+  let rt;
+  function onResize(){ clearTimeout(rt); rt=setTimeout(()=>{ setMode(); if(mode==='pinned') tick(); },180); }
+  addEventListener('resize',onResize);
+  addEventListener('orientationchange',()=>setTimeout(onResize,250));
+  reduce.addEventListener?.('change',setMode);
+  short.addEventListener?.('change',setMode);
+})();
+
+/* ---------- touch devices: no hover, so photos colour up in view ---------- */
+(function(){
+  if(!matchMedia('(hover:none)').matches) return;
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>e.target.querySelectorAll('.mono')
+      .forEach(m=>m.classList.toggle('live', e.isIntersecting)));
+  },{threshold:.4});
+  document.querySelectorAll('.card.hoverable,.split-vis.hoverable').forEach(el=>io.observe(el));
 })();
 
 /* ---------- product scroller: buttons, drag, progress ---------- */
@@ -740,14 +814,23 @@ document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
     const max=t.scrollWidth-t.clientWidth;
     const p=max>0? t.scrollLeft/max : 0;
     fill.style.width=Math.max(18, 18+p*82)+'%';
-    prev.disabled=t.scrollLeft<4; next.disabled=t.scrollLeft>max-4;
+    if(prev){prev.disabled=t.scrollLeft<4;} if(next){next.disabled=t.scrollLeft>max-4;}
   }
   t.addEventListener('scroll',upd,{passive:true}); setTimeout(upd,60); addEventListener('resize',upd);
 
+  /* Mouse drag only. On touch the browser's own scrolling is better than
+     anything we can fake, and preventDefault() here kills its momentum. */
   let down=false,sx=0,sl=0;
-  t.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sl=t.scrollLeft;t.classList.add('drag')});
+  t.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='touch') return;
+    down=true;sx=e.clientX;sl=t.scrollLeft;t.classList.add('drag');
+  });
   addEventListener('pointerup',()=>{down=false;t.classList.remove('drag')});
-  t.addEventListener('pointermove',e=>{ if(!down)return; e.preventDefault(); t.scrollLeft=sl-(e.clientX-sx); });
+  addEventListener('pointercancel',()=>{down=false;t.classList.remove('drag')});
+  t.addEventListener('pointermove',e=>{
+    if(!down||e.pointerType==='touch')return;
+    e.preventDefault(); t.scrollLeft=sl-(e.clientX-sx);
+  });
 })();
 </script>
 </body>
